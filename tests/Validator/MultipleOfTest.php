@@ -1,9 +1,9 @@
 <?php
 
-namespace Utopia\Http\Validator;
+namespace Utopia\Validator;
 
 use PHPUnit\Framework\TestCase;
-use Utopia\Http\Validator;
+use Utopia\Validator;
 
 class MultipleOfTest extends TestCase
 {
@@ -53,8 +53,8 @@ class MultipleOfTest extends TestCase
         $this->assertFalse($vaidator->isValid($invalidTextInvalidUrl));
 
         $this->assertCount(2, $vaidator->getValidators());
-        $this->assertEquals("Utopia\Http\Validator\Text", \get_class($vaidator->getValidators()[0]));
-        $this->assertEquals("Utopia\Http\Validator\URL", \get_class($vaidator->getValidators()[1]));
+        $this->assertEquals("Utopia\Validator\Text", \get_class($vaidator->getValidators()[0]));
+        $this->assertEquals("Utopia\Validator\URL", \get_class($vaidator->getValidators()[1]));
 
         $vaidator = new NoneOf([new Text(20), new URL()], Validator::TYPE_STRING);
         $this->assertFalse($vaidator->isValid($validTextValidUrl));

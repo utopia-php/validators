@@ -1,6 +1,6 @@
 <?php
 
-namespace Utopia\Http\Validator;
+namespace Utopia\Validator;
 
 use PHPUnit\Framework\TestCase;
 
@@ -23,6 +23,6 @@ class JSONTest extends TestCase
         $this->assertFalse($json->isValid(1.2));
         $this->assertFalse($json->isValid("{'test': 'demo'}"));
         $this->assertFalse($json->isArray());
-        $this->assertEquals(\Utopia\Http\Validator::TYPE_OBJECT, $json->getType());
+        $this->assertEquals(\Utopia\Validator::TYPE_OBJECT, $json->getType());
     }
 }

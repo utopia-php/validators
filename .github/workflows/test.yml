@@ -1,37 +1,27 @@
 name: "Tests"
 
 on: [pull_request]
+
 jobs:
-  lint:
+  test:
     name: Tests
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Setup Docker
-      run: docker compose up -d --build
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
 
-    - name: Wait for Server to be ready
-      run: sleep 10
-
-    - name: Run unit Tests
-      run: docker compose exec swoole vendor/bin/phpunit --configuration phpunit.xml --testsuite=unit
-
-    - name: Run FPM Tests
-      run: docker compose exec fpm vendor/bin/phpunit --configuration phpunit.xml --group=fpm
-
-    - name: Run Swoole Tests
-      run: docker compose exec swoole vendor/bin/phpunit --configuration phpunit.xml --group=swoole
-
-    - name: Run Swoole Corotuine Tests
-      run: docker compose exec swoole-coroutine vendor/bin/phpunit --configuration phpunit.xml --group=swoole-coroutine
+      - name: Run PHPUnit
+        run: composer test

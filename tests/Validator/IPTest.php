@@ -11,7 +11,7 @@
  * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
  */
 
-namespace Utopia\Http\Validator;
+namespace Utopia\Validator;
 
 use PHPUnit\Framework\TestCase;
 
