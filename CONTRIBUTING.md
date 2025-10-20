@@ -1,16 +1,14 @@
 # Contributing
 
-We would ❤️ for you to contribute to Utopia HTTP and help make it better! We want contributing to this library to be fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including issues, new docs as well as updates and tweaks, blog posts, workshops, and more.
+We would ❤️ for you to contribute to Utopia Validators and help make it better! We want contributing to this library to be fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including issues, new docs as well as updates and tweaks, blog posts, workshops, and more.
 
 ## How to Start?
 
 If you are worried or don’t know where to start, check out our next section explaining what kind of help we could use and where can you get involved. You can reach out with questions to [Eldad Fux (@eldadfux)](https://twitter.com/eldadfux) or [@appwrite_io](https://twitter.com/appwrite_io) on Twitter, and anyone from the [Appwrite team on Discord](https://discord.gg/GSeTUeA). You can also submit an issue, and a maintainer can guide you!
 
-You can get an in-depth understanding of Utopia HTTP in our [Getting Started](docs/Getting-Starting-Guide.md) guide.
-
 ## Code of Conduct
 
-Help us keep Utopia HTTP open and inclusive. Please read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
+Help us keep Utopia Validators open and inclusive. Please read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 ## Submit a Pull Request 🚀
 
@@ -66,14 +64,11 @@ $ git push origin [name_of_your_new_branch]
 
 ### Testing
 
-- `docker compose up -d`
-- `docker compose exec fpm vendor/bin/phpunit --configuration phpunit.xml`
-- `docker compose exec swoole vendor/bin/phpunit --configuration phpunit.xml`
-- `docker compose exec swoole-coroutine vendor/bin/phpunit --configuration phpunit.xml`
+- `composer test`
 
 ## Introducing New Features
 
-We would 💖 you to contribute to Utopia HTTP, but we would also like to make sure this library is as great as possible and loyal to its vision and mission statement 🙏.
+We would 💖 you to contribute to Utopia Validators, but we would also like to make sure this library is as great as possible and loyal to its vision and mission statement 🙏.
 
 For us to find the right balance, please open an issue explaining your ideas before introducing a new pull request.
 
@@ -107,4 +102,4 @@ Submitting documentation updates, enhancements, designs, or bug fixes. Spelling 
 
 ### Helping Someone
 
-Searching for Utopia HTTP on Discord, GitHub, or StackOverflow and helping someone else who needs help. You can also help by teaching others how to contribute to this repo!
+Searching for Utopia Validators on Discord, GitHub, or StackOverflow and helping someone else who needs help. You can also help by teaching others how to contribute to this repo!

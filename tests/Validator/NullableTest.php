@@ -1,6 +1,6 @@
 <?php
 
-namespace Utopia\Http\Validator;
+namespace Utopia\Validator;
 
 use PHPUnit\Framework\TestCase;
 

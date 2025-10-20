@@ -1,6 +1,6 @@
 <?php
 
-namespace Utopia\Http\Validator;
+namespace Utopia\Validator;
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,7 +10,7 @@ class HostnameTest extends TestCase
     {
         $validator = new Hostname();
 
-        $this->assertEquals(\Utopia\Http\Validator::TYPE_STRING, $validator->getType());
+        $this->assertEquals(\Utopia\Validator::TYPE_STRING, $validator->getType());
         $this->assertFalse($validator->isArray());
 
         $this->assertTrue($validator->isValid('myweb.com'));
