@@ -27,8 +27,5 @@
         "phpunit/phpunit": "11.*",
         "laravel/pint": "1.*",
         "phpstan/phpstan": "1.*"
-    },
-    "recommends": {
-      "ext-xdebug": "*"
     }
 }
