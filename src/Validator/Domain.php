@@ -18,7 +18,7 @@ class Domain extends Validator
      */
     public function __construct(
         protected array $restrictions = [],
-        protected bool $allowUnderscore = false
+        protected bool $hostnames = true
     ) {
     }
 
@@ -72,7 +72,13 @@ class Domain extends Validator
             return false;
         }
 
-        if (\filter_var($value, FILTER_VALIDATE_DOMAIN) === false) {
+        if (
+            \filter_var(
+                $value,
+                FILTER_VALIDATE_DOMAIN,
+                $this->hostnames ? FILTER_FLAG_HOSTNAME : 0
+            ) === false
+        ) {
             return false;
         }
 
