@@ -25,8 +25,8 @@
     },
     "require-dev": {
         "ext-xdebug": "*",
-        "phpunit/phpunit": "^9.5.25",
-        "laravel/pint": "^1.2",
+        "phpunit/phpunit": "11.*",
+        "laravel/pint": "1.*",
         "phpstan/phpstan": "1.*"
     }
 }

@@ -14,6 +14,15 @@ use Utopia\Validator;
 class Domain extends Validator
 {
     /**
+     * @param array<mixed> $restrictions Set of conditions that prevent validation from passing
+     */
+    public function __construct(
+        protected array $restrictions = [],
+        protected bool $allowUnderscore = false
+    ) {
+    }
+
+    /**
      * Helper for creating domain restriction rule.
      * Such rules prevent validation from passing, so this behaves as deny-list.
      *
@@ -29,13 +38,6 @@ class Domain extends Validator
             'levels' => $levels,
             'prefixDenyList' => $prefixDenyList,
         ];
-    }
-
-    /**
-     * @param array<mixed> $restrictions Set of conditions that prevent validation from passing
-     */
-    public function __construct(protected array $restrictions = [])
-    {
     }
 
     /**
@@ -70,7 +72,7 @@ class Domain extends Validator
             return false;
         }
 
-        if (\filter_var($value, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
+        if (\filter_var($value, FILTER_VALIDATE_DOMAIN) === false) {
             return false;
         }
 

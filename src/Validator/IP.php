@@ -3,7 +3,6 @@
 namespace Utopia\Validator;
 
 use Utopia\Validator;
-
 use Exception;
 
 /**
