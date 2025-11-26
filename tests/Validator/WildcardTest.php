@@ -16,6 +16,6 @@ class WildcardTest extends TestCase
         $this->assertTrue($validator->isValid(true));
         $this->assertTrue($validator->isValid(false));
         $this->assertFalse($validator->isArray());
-        $this->assertEquals(\Utopia\Validator::TYPE_STRING, $validator->getType());
+        $this->assertSame(\Utopia\Validator::TYPE_STRING, $validator->getType());
     }
 }

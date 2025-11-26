@@ -28,34 +28,34 @@ class DomainTest extends TestCase
     public function testIsValid()
     {
         // Assertions
-        $this->assertEquals(true, $this->domain->isValid('example.com'));
-        $this->assertEquals(true, $this->domain->isValid('subdomain.example.com'));
-        $this->assertEquals(true, $this->domain->isValid('subdomain.example-app.com'));
-        $this->assertEquals(false, $this->domain->isValid('subdomain.example_app.com'));
-        $this->assertEquals(true, $this->domain->isValid('subdomain-new.example.com'));
-        $this->assertEquals(false, $this->domain->isValid('subdomain_new.example.com'));
-        $this->assertEquals(true, $this->domain->isValid('localhost'));
-        $this->assertEquals(true, $this->domain->isValid('example.io'));
-        $this->assertEquals(true, $this->domain->isValid('example.org'));
-        $this->assertEquals(true, $this->domain->isValid('example.org'));
-        $this->assertEquals(false, $this->domain->isValid(false));
-        $this->assertEquals(false, $this->domain->isValid('api.appwrite.io.'));
-        $this->assertEquals(false, $this->domain->isValid('.api.appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('.api.appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('api..appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('api-.appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('api.-appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('app write.io'));
-        $this->assertEquals(false, $this->domain->isValid(' appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('appwrite.io '));
-        $this->assertEquals(false, $this->domain->isValid('-appwrite.io'));
-        $this->assertEquals(false, $this->domain->isValid('appwrite.io-'));
-        $this->assertEquals(false, $this->domain->isValid('.'));
-        $this->assertEquals(false, $this->domain->isValid('..'));
-        $this->assertEquals(false, $this->domain->isValid(''));
-        $this->assertEquals(false, $this->domain->isValid(['string', 'string']));
-        $this->assertEquals(false, $this->domain->isValid(1));
-        $this->assertEquals(false, $this->domain->isValid(1.2));
+        $this->assertSame(true, $this->domain->isValid('example.com'));
+        $this->assertSame(true, $this->domain->isValid('subdomain.example.com'));
+        $this->assertSame(true, $this->domain->isValid('subdomain.example-app.com'));
+        $this->assertSame(false, $this->domain->isValid('subdomain.example_app.com'));
+        $this->assertSame(true, $this->domain->isValid('subdomain-new.example.com'));
+        $this->assertSame(false, $this->domain->isValid('subdomain_new.example.com'));
+        $this->assertSame(true, $this->domain->isValid('localhost'));
+        $this->assertSame(true, $this->domain->isValid('example.io'));
+        $this->assertSame(true, $this->domain->isValid('example.org'));
+        $this->assertSame(true, $this->domain->isValid('example.org'));
+        $this->assertSame(false, $this->domain->isValid(false));
+        $this->assertSame(false, $this->domain->isValid('api.appwrite.io.'));
+        $this->assertSame(false, $this->domain->isValid('.api.appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('.api.appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('api..appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('api-.appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('api.-appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('app write.io'));
+        $this->assertSame(false, $this->domain->isValid(' appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('appwrite.io '));
+        $this->assertSame(false, $this->domain->isValid('-appwrite.io'));
+        $this->assertSame(false, $this->domain->isValid('appwrite.io-'));
+        $this->assertSame(false, $this->domain->isValid('.'));
+        $this->assertSame(false, $this->domain->isValid('..'));
+        $this->assertSame(false, $this->domain->isValid(''));
+        $this->assertSame(false, $this->domain->isValid(['string', 'string']));
+        $this->assertSame(false, $this->domain->isValid(1));
+        $this->assertSame(false, $this->domain->isValid(1.2));
     }
 
     /**
@@ -66,24 +66,24 @@ class DomainTest extends TestCase
         // Create validator with hostnames=false for permissive validation
         $permissiveValidator = new Domain([], false);
 
-        $this->assertEquals(true, $permissiveValidator->isValid('xn--e1afmkfd.xn--p1ai')); // пример.рф in punycode
-        $this->assertEquals(true, $permissiveValidator->isValid('xn--fsq.com')); // 中.com in punycode
-        $this->assertEquals(true, $permissiveValidator->isValid('123.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('test123.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('localhost'));
-        $this->assertEquals(true, $permissiveValidator->isValid('intranet'));
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain_new.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain.example_app.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('xn--e1afmkfd.xn--p1ai')); // пример.рф in punycode
+        $this->assertSame(true, $permissiveValidator->isValid('xn--fsq.com')); // 中.com in punycode
+        $this->assertSame(true, $permissiveValidator->isValid('123.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('test123.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('localhost'));
+        $this->assertSame(true, $permissiveValidator->isValid('intranet'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain_new.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain.example_app.com'));
         $longLabel = str_repeat('a', 63);
-        $this->assertEquals(true, $permissiveValidator->isValid($longLabel . '.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('a.b.c.d.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('sub1.sub2.sub3.example.org'));
-        $this->assertEquals(true, $permissiveValidator->isValid('api-.appwrite.io')); // Dash at end of label
-        $this->assertEquals(true, $permissiveValidator->isValid('api.-appwrite.io')); // Dash at start of label
-        $this->assertEquals(true, $permissiveValidator->isValid('app write.io')); // Space in domain
-        $this->assertEquals(true, $permissiveValidator->isValid(' appwrite.io')); // Leading space
-        $this->assertEquals(true, $permissiveValidator->isValid('appwrite.io ')); // Trailing space
-        $this->assertEquals(true, $permissiveValidator->isValid('-appwrite.io')); // Leading dash
+        $this->assertSame(true, $permissiveValidator->isValid($longLabel . '.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('a.b.c.d.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('sub1.sub2.sub3.example.org'));
+        $this->assertSame(true, $permissiveValidator->isValid('api-.appwrite.io')); // Dash at end of label
+        $this->assertSame(true, $permissiveValidator->isValid('api.-appwrite.io')); // Dash at start of label
+        $this->assertSame(true, $permissiveValidator->isValid('app write.io')); // Space in domain
+        $this->assertSame(true, $permissiveValidator->isValid(' appwrite.io')); // Leading space
+        $this->assertSame(true, $permissiveValidator->isValid('appwrite.io ')); // Trailing space
+        $this->assertSame(true, $permissiveValidator->isValid('-appwrite.io')); // Leading dash
     }
 
     /**
@@ -95,29 +95,29 @@ class DomainTest extends TestCase
         $permissiveValidator = new Domain([], false);
 
         // These should still be invalid even in permissive mode
-        $this->assertEquals(false, $permissiveValidator->isValid('example..com')); // Double dot
-        $this->assertEquals(false, $permissiveValidator->isValid('.example.com')); // Leading dot
-        $this->assertEquals(false, $permissiveValidator->isValid('example.com.')); // Trailing dot (caught by Domain validator)
-        $this->assertEquals(false, $permissiveValidator->isValid('appwrite.io-')); // Trailing dash (caught by Domain validator)
+        $this->assertSame(false, $permissiveValidator->isValid('example..com')); // Double dot
+        $this->assertSame(false, $permissiveValidator->isValid('.example.com')); // Leading dot
+        $this->assertSame(false, $permissiveValidator->isValid('example.com.')); // Trailing dot (caught by Domain validator)
+        $this->assertSame(false, $permissiveValidator->isValid('appwrite.io-')); // Trailing dash (caught by Domain validator)
 
         // Test label too long (more than 63 characters)
         $tooLongLabel = str_repeat('a', 64);
-        $this->assertEquals(false, $permissiveValidator->isValid($tooLongLabel . '.com'));
+        $this->assertSame(false, $permissiveValidator->isValid($tooLongLabel . '.com'));
 
         // Test total domain length too long (more than 253 characters)
         $longDomain = str_repeat('a', 50) . '.' . str_repeat('b', 50) . '.' .
                       str_repeat('c', 50) . '.' . str_repeat('d', 50) . '.' .
                       str_repeat('e', 50) . '.com';
-        $this->assertEquals(false, $permissiveValidator->isValid($longDomain));
+        $this->assertSame(false, $permissiveValidator->isValid($longDomain));
 
         // Note: These are actually allowed by FILTER_VALIDATE_DOMAIN without FILTER_FLAG_HOSTNAME
         // but might be unexpected:
-        $this->assertEquals(true, $permissiveValidator->isValid('exam ple.com')); // Space in domain
-        $this->assertEquals(true, $permissiveValidator->isValid('example@.com')); // @ character
-        $this->assertEquals(true, $permissiveValidator->isValid('example#.com')); // # character
-        $this->assertEquals(true, $permissiveValidator->isValid('http://example.com')); // Protocol
-        $this->assertEquals(true, $permissiveValidator->isValid('example.com:8080')); // Port
-        $this->assertEquals(true, $permissiveValidator->isValid('example.com/path')); // Path
+        $this->assertSame(true, $permissiveValidator->isValid('exam ple.com')); // Space in domain
+        $this->assertSame(true, $permissiveValidator->isValid('example@.com')); // @ character
+        $this->assertSame(true, $permissiveValidator->isValid('example#.com')); // # character
+        $this->assertSame(true, $permissiveValidator->isValid('http://example.com')); // Protocol
+        $this->assertSame(true, $permissiveValidator->isValid('example.com:8080')); // Port
+        $this->assertSame(true, $permissiveValidator->isValid('example.com/path')); // Path
     }
 
     public function testRestrictions()
@@ -127,23 +127,23 @@ class DomainTest extends TestCase
             Domain::createRestriction('fra.appwrite.run', 4),
         ]);
 
-        $this->assertEquals(true, $validator->isValid('google.com'));
-        $this->assertEquals(true, $validator->isValid('stage.google.com'));
-        $this->assertEquals(true, $validator->isValid('shard4.stage.google.com'));
+        $this->assertSame(true, $validator->isValid('google.com'));
+        $this->assertSame(true, $validator->isValid('stage.google.com'));
+        $this->assertSame(true, $validator->isValid('shard4.stage.google.com'));
 
-        $this->assertEquals(false, $validator->isValid('appwrite.network'));
-        $this->assertEquals(false, $validator->isValid('preview-a.appwrite.network'));
-        $this->assertEquals(false, $validator->isValid('branch-a.appwrite.network'));
-        $this->assertEquals(true, $validator->isValid('google.appwrite.network'));
-        $this->assertEquals(false, $validator->isValid('stage.google.appwrite.network'));
-        $this->assertEquals(false, $validator->isValid('shard4.stage.google.appwrite.network'));
+        $this->assertSame(false, $validator->isValid('appwrite.network'));
+        $this->assertSame(false, $validator->isValid('preview-a.appwrite.network'));
+        $this->assertSame(false, $validator->isValid('branch-a.appwrite.network'));
+        $this->assertSame(true, $validator->isValid('google.appwrite.network'));
+        $this->assertSame(false, $validator->isValid('stage.google.appwrite.network'));
+        $this->assertSame(false, $validator->isValid('shard4.stage.google.appwrite.network'));
 
-        $this->assertEquals(false, $validator->isValid('fra.appwrite.run'));
-        $this->assertEquals(true, $validator->isValid('appwrite.run'));
-        $this->assertEquals(true, $validator->isValid('google.fra.appwrite.run'));
-        $this->assertEquals(false, $validator->isValid('shard4.google.fra.appwrite.run'));
-        $this->assertEquals(true, $validator->isValid('branch-google.fra.appwrite.run'));
-        $this->assertEquals(true, $validator->isValid('preview-google.fra.appwrite.run'));
+        $this->assertSame(false, $validator->isValid('fra.appwrite.run'));
+        $this->assertSame(true, $validator->isValid('appwrite.run'));
+        $this->assertSame(true, $validator->isValid('google.fra.appwrite.run'));
+        $this->assertSame(false, $validator->isValid('shard4.google.fra.appwrite.run'));
+        $this->assertSame(true, $validator->isValid('branch-google.fra.appwrite.run'));
+        $this->assertSame(true, $validator->isValid('preview-google.fra.appwrite.run'));
     }
 
     /**
@@ -153,26 +153,26 @@ class DomainTest extends TestCase
     {
         // Test with hostnames=true (default, strict mode with FILTER_FLAG_HOSTNAME)
         $strictValidator = new Domain([], true);
-        $this->assertEquals(false, $strictValidator->isValid('subdomain_new.example.com'));
-        $this->assertEquals(false, $strictValidator->isValid('subdomain.example_app.com'));
-        $this->assertEquals(false, $strictValidator->isValid('sub_domain.example.com'));
-        $this->assertEquals(false, $strictValidator->isValid('app write.io'));
-        $this->assertEquals(false, $strictValidator->isValid('api-.appwrite.io'));
-        $this->assertEquals(false, $strictValidator->isValid('api.-appwrite.io'));
+        $this->assertSame(false, $strictValidator->isValid('subdomain_new.example.com'));
+        $this->assertSame(false, $strictValidator->isValid('subdomain.example_app.com'));
+        $this->assertSame(false, $strictValidator->isValid('sub_domain.example.com'));
+        $this->assertSame(false, $strictValidator->isValid('app write.io'));
+        $this->assertSame(false, $strictValidator->isValid('api-.appwrite.io'));
+        $this->assertSame(false, $strictValidator->isValid('api.-appwrite.io'));
 
         // Test with hostnames=false (permissive mode without FILTER_FLAG_HOSTNAME)
         $permissiveValidator = new Domain([], false);
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain_new.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain.example_app.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('sub_domain.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('app write.io'));
-        $this->assertEquals(true, $permissiveValidator->isValid('api-.appwrite.io'));
-        $this->assertEquals(true, $permissiveValidator->isValid('api.-appwrite.io'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain_new.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain.example_app.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('sub_domain.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('app write.io'));
+        $this->assertSame(true, $permissiveValidator->isValid('api-.appwrite.io'));
+        $this->assertSame(true, $permissiveValidator->isValid('api.-appwrite.io'));
 
         // Domains without underscores should be valid in both modes
-        $this->assertEquals(true, $strictValidator->isValid('subdomain.example.com'));
-        $this->assertEquals(true, $strictValidator->isValid('subdomain-new.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain.example.com'));
-        $this->assertEquals(true, $permissiveValidator->isValid('subdomain-new.example.com'));
+        $this->assertSame(true, $strictValidator->isValid('subdomain.example.com'));
+        $this->assertSame(true, $strictValidator->isValid('subdomain-new.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain.example.com'));
+        $this->assertSame(true, $permissiveValidator->isValid('subdomain-new.example.com'));
     }
 }

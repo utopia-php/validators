@@ -25,7 +25,7 @@ class AssocTest extends TestCase
         $this->assertTrue($this->assoc->isValid([]));
         $this->assertTrue($this->assoc->isValid(['value' => str_repeat('-', 62000)]));
         $this->assertTrue($this->assoc->isArray());
-        $this->assertEquals(\Utopia\Validator::TYPE_ARRAY, $this->assoc->getType());
+        $this->assertSame(\Utopia\Validator::TYPE_ARRAY, $this->assoc->getType());
     }
 
     public function testCantValidateSequentialArray(): void
