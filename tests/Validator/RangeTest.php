@@ -19,11 +19,11 @@ class RangeTest extends TestCase
         $this->assertFalse($range->isValid('1.5'));
         $this->assertFalse($range->isValid(6));
         $this->assertFalse($range->isValid(-1));
-        $this->assertEquals(0, $range->getMin());
-        $this->assertEquals(5, $range->getMax());
+        $this->assertSame(0, $range->getMin());
+        $this->assertSame(5, $range->getMax());
         $this->assertFalse($range->isArray());
-        $this->assertEquals(\Utopia\Validator::TYPE_INTEGER, $range->getFormat());
-        $this->assertEquals(\Utopia\Validator::TYPE_INTEGER, $range->getType());
+        $this->assertSame(\Utopia\Validator::TYPE_INTEGER, $range->getFormat());
+        $this->assertSame(\Utopia\Validator::TYPE_INTEGER, $range->getType());
     }
 
     public function testCanValidateFloatRange()
@@ -38,11 +38,11 @@ class RangeTest extends TestCase
         $this->assertFalse($range->isValid(4));
         $this->assertFalse($range->isValid(1.5));
         $this->assertFalse($range->isValid(-1));
-        $this->assertEquals(0, $range->getMin());
-        $this->assertEquals(1, $range->getMax());
+        $this->assertSame(0, $range->getMin());
+        $this->assertSame(1, $range->getMax());
         $this->assertFalse($range->isArray());
-        $this->assertEquals(\Utopia\Validator::TYPE_FLOAT, $range->getFormat());
-        $this->assertEquals(\Utopia\Validator::TYPE_FLOAT, $range->getType(), \Utopia\Validator::TYPE_FLOAT);
+        $this->assertSame(\Utopia\Validator::TYPE_FLOAT, $range->getFormat());
+        $this->assertSame(\Utopia\Validator::TYPE_FLOAT, $range->getType(), \Utopia\Validator::TYPE_FLOAT);
     }
 
     public function canValidateInfinityRange()
