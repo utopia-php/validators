@@ -3,3 +3,8 @@ parameters:
     paths:
         - src
         - tests
+services:
+    -
+        class: Utopia\PHPStan\DisallowAssertEqualsExtension
+        tags:
+            - phpstan.restrictedMethodUsageExtension
