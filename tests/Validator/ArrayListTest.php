@@ -10,11 +10,11 @@ class ArrayListTest extends TestCase
     {
         $arrayList = new ArrayList(new Integer());
         $this->assertFalse($arrayList->isValid(['text']));
-        $this->assertEquals('Value must a valid array and Value must be a valid integer', $arrayList->getDescription());
+        $this->assertSame('Value must a valid array and Value must be a valid integer', $arrayList->getDescription());
 
         $arrayList = new ArrayList(new Integer(), 3);
         $this->assertFalse($arrayList->isValid(['a', 'b', 'c', 'd']));
-        $this->assertEquals('Value must a valid array no longer than 3 items and Value must be a valid integer', $arrayList->getDescription());
+        $this->assertSame('Value must a valid array no longer than 3 items and Value must be a valid integer', $arrayList->getDescription());
     }
 
     public function testCanValidateTextValues(): void
@@ -26,7 +26,7 @@ class ArrayListTest extends TestCase
         $this->assertFalse($arrayList->isValid(['string', 'string', 3]));
         $this->assertFalse($arrayList->isValid('string'));
         $this->assertFalse($arrayList->isValid('string'));
-        $this->assertEquals(\Utopia\Validator::TYPE_STRING, $arrayList->getType());
+        $this->assertSame(\Utopia\Validator::TYPE_STRING, $arrayList->getType());
         $this->assertInstanceOf(Text::class, $arrayList->getValidator());
     }
 
@@ -36,7 +36,7 @@ class ArrayListTest extends TestCase
         $this->assertTrue($arrayList->isValid([1, 2, 3]));
         $this->assertFalse($arrayList->isValid(1));
         $this->assertFalse($arrayList->isValid('string'));
-        $this->assertEquals(\Utopia\Validator::TYPE_MIXED, $arrayList->getType());
+        $this->assertSame(\Utopia\Validator::TYPE_MIXED, $arrayList->getType());
         $this->assertInstanceOf(Numeric::class, $arrayList->getValidator());
     }
 
@@ -46,7 +46,7 @@ class ArrayListTest extends TestCase
         $this->assertTrue($arrayList->isValid([1]));
         $this->assertTrue($arrayList->isValid([1, 2]));
         $this->assertFalse($arrayList->isValid([1, 2, 3]));
-        $this->assertEquals($arrayList->getType(), \Utopia\Validator::TYPE_MIXED);
+        $this->assertSame($arrayList->getType(), \Utopia\Validator::TYPE_MIXED);
         $this->assertInstanceOf(Numeric::class, $arrayList->getValidator());
     }
 }

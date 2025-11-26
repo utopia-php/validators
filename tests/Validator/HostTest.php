@@ -28,15 +28,15 @@ class HostTest extends TestCase
     public function testIsValid()
     {
         // Assertions
-        $this->assertEquals($this->host->isValid('https://example.io/link'), true);
-        $this->assertEquals($this->host->isValid('https://localhost'), true);
-        $this->assertEquals($this->host->isValid('localhost'), false);
-        $this->assertEquals($this->host->isValid('http://subdomain.example.test/path'), true);
-        $this->assertEquals($this->host->isValid('http://test.subdomain.example.test/path'), false);
-        $this->assertEquals($this->host->isValid('http://appwrite.io/path'), false);
-        $this->assertEquals($this->host->isValid('http://me.appwrite.io/path'), true);
-        $this->assertEquals($this->host->isValid('http://you.appwrite.io/path'), true);
-        $this->assertEquals($this->host->isValid('http://us.together.appwrite.io/path'), true);
-        $this->assertEquals($this->host->getType(), 'string');
+        $this->assertSame(true, $this->host->isValid('https://example.io/link'));
+        $this->assertSame(true, $this->host->isValid('https://localhost'));
+        $this->assertSame(false, $this->host->isValid('localhost'));
+        $this->assertSame(true, $this->host->isValid('http://subdomain.example.test/path'));
+        $this->assertSame(false, $this->host->isValid('http://test.subdomain.example.test/path'));
+        $this->assertSame(false, $this->host->isValid('http://appwrite.io/path'));
+        $this->assertSame(true, $this->host->isValid('http://me.appwrite.io/path'));
+        $this->assertSame(true, $this->host->isValid('http://you.appwrite.io/path'));
+        $this->assertSame(true, $this->host->isValid('http://us.together.appwrite.io/path'));
+        $this->assertSame('string', $this->host->getType());
     }
 }
