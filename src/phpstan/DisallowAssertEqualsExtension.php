@@ -9,22 +9,22 @@ use PHPStan\Rules\RestrictedUsage\RestrictedUsage;
 
 class DisallowAssertEqualsExtension implements RestrictedMethodUsageExtension
 {
-  public function isRestrictedMethodUsage(
-    ExtendedMethodReflection $methodReflection,
-    Scope $scope,
-  ): ?RestrictedUsage {
-    if ($methodReflection->getName() !== 'assertEquals') {
-      return null;
-    }
+    public function isRestrictedMethodUsage(
+        ExtendedMethodReflection $methodReflection,
+        Scope $scope,
+    ): ?RestrictedUsage {
+        if ($methodReflection->getName() !== 'assertEquals') {
+            return null;
+        }
 
-    $declaringClass = $methodReflection->getDeclaringClass();
-    if ($declaringClass->getName() !== 'PHPUnit\Framework\Assert') {
-        return null;
-    }
+        $declaringClass = $methodReflection->getDeclaringClass();
+        if ($declaringClass->getName() !== 'PHPUnit\Framework\Assert') {
+            return null;
+        }
 
-    return RestrictedUsage::create(
-      errorMessage: 'Use assertSame() instead of assertEquals()',
-      identifier: 'method.disallowedAssertEquals',
-    );
-  }
+        return RestrictedUsage::create(
+            errorMessage: 'Use assertSame() instead of assertEquals()',
+            identifier: 'method.disallowedAssertEquals',
+        );
+    }
 }
