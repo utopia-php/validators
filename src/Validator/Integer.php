@@ -137,7 +137,8 @@ class Integer extends Validator
      */
     public function getFormat(): string
     {
-        return 'int' . $this->bits;
+        $prefix = $this->isUnsigned() ? 'uint' : 'int';
+        return $prefix . $this->bits;
     }
 
     /**

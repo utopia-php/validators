@@ -44,6 +44,7 @@ class IntegerTest extends TestCase
 
         // 8-bit signed: -128 to 127
         $validator8 = new Integer(false, 8);
+        $this->assertSame('int8', $validator8->getFormat());
         $this->assertTrue($validator8->isValid(-128));
         $this->assertTrue($validator8->isValid(127));
         $this->assertFalse($validator8->isValid(-129));
@@ -51,6 +52,7 @@ class IntegerTest extends TestCase
 
         // 8-bit unsigned: 0 to 255
         $validator8u = new Integer(false, 8, true);
+        $this->assertSame('uint8', $validator8u->getFormat());
         $this->assertTrue($validator8u->isValid(0));
         $this->assertTrue($validator8u->isValid(255));
         $this->assertFalse($validator8u->isValid(-1));
@@ -58,8 +60,13 @@ class IntegerTest extends TestCase
 
         // 16-bit unsigned: 0 to 65535
         $validator16u = new Integer(false, 16, true);
+        $this->assertSame('uint16', $validator16u->getFormat());
         $this->assertTrue($validator16u->isValid(65535));
         $this->assertFalse($validator16u->isValid(65536));
+
+        // 32-bit unsigned
+        $validator32u = new Integer(false, 32, true);
+        $this->assertSame('uint32', $validator32u->getFormat());
 
         // 64-bit signed
         $validator64 = new Integer(false, 64);
