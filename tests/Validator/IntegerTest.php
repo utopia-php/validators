@@ -72,4 +72,11 @@ class IntegerTest extends TestCase
         $this->expectExceptionMessage('Bits must be 8, 16, 32, or 64');
         new Integer(false, 128);
     }
+
+    public function test64BitUnsignedNotSupported()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('64-bit unsigned integers are not supported due to PHP integer limitations');
+        new Integer(false, 64, true);
+    }
 }

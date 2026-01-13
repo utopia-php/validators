@@ -41,6 +41,11 @@ class Integer extends Validator
             throw new \InvalidArgumentException('Bits must be 8, 16, 32, or 64');
         }
 
+        // 64-bit unsigned integers exceed PHP_INT_MAX and convert to floats with precision loss
+        if ($bits === 64 && $unsigned) {
+            throw new \InvalidArgumentException('64-bit unsigned integers are not supported due to PHP integer limitations');
+        }
+
         $this->loose = $loose;
         $this->bits = $bits;
         $this->unsigned = $unsigned;
