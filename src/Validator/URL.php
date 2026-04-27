@@ -53,7 +53,7 @@ class URL extends Validator
      */
     public function isValid($value): bool
     {
-        if ($this->allowEmpty && ($value === '' || $value === null)) {
+        if ($this->allowEmpty && $value === '') {
             return true;
         }
 
