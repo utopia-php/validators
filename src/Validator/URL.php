@@ -15,12 +15,16 @@ class URL extends Validator
 {
     protected array $allowedSchemes;
 
+    protected bool $allowEmpty;
+
     /**
      * @param array $allowedSchemes
+     * @param bool $allowEmpty
      */
-    public function __construct(array $allowedSchemes = [])
+    public function __construct(array $allowedSchemes = [], bool $allowEmpty = false)
     {
         $this->allowedSchemes = $allowedSchemes;
+        $this->allowEmpty = $allowEmpty;
     }
 
     /**
@@ -49,6 +53,10 @@ class URL extends Validator
      */
     public function isValid($value): bool
     {
+        if ($this->allowEmpty && empty($value)) {
+            return true;
+        }
+
         if (\filter_var($value, FILTER_VALIDATE_URL) === false) {
             return false;
         }
