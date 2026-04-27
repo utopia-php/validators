@@ -144,6 +144,7 @@ class DomainTest extends TestCase
         $this->assertSame(false, $domainAllowEmpty->isValid(1));
     }
 
+    public function testRestrictions()
     {
         $validator = new Domain([
             Domain::createRestriction('appwrite.network', 3, ['preview-', 'branch-']),
