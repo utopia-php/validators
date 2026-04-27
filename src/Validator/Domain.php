@@ -18,7 +18,8 @@ class Domain extends Validator
      */
     public function __construct(
         protected array $restrictions = [],
-        protected bool $hostnames = true
+        protected bool $hostnames = true,
+        protected bool $allowEmpty = false
     ) {
     }
 
@@ -64,6 +65,10 @@ class Domain extends Validator
      */
     public function isValid($value): bool
     {
+        if ($this->allowEmpty && $value === '') {
+            return true;
+        }
+
         if (empty($value)) {
             return false;
         }

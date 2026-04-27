@@ -120,6 +120,30 @@ class DomainTest extends TestCase
         $this->assertSame(true, $permissiveValidator->isValid('example.com/path')); // Path
     }
 
+    /**
+     * Test allowEmpty parameter
+     */
+    public function testAllowEmpty()
+    {
+        // By default, empty string is invalid
+        $this->assertSame(false, $this->domain->isValid(''));
+
+        // With allowEmpty=true, empty string is valid
+        $domainAllowEmpty = new Domain([], true, true);
+        $this->assertSame(true, $domainAllowEmpty->isValid(''));
+
+        // null is still invalid even with allowEmpty=true
+        $this->assertSame(false, $domainAllowEmpty->isValid(null));
+
+        // Valid domains still pass with allowEmpty=true
+        $this->assertSame(true, $domainAllowEmpty->isValid('example.com'));
+        $this->assertSame(true, $domainAllowEmpty->isValid('subdomain.example.com'));
+
+        // Invalid domains still fail with allowEmpty=true
+        $this->assertSame(false, $domainAllowEmpty->isValid('invalid..domain'));
+        $this->assertSame(false, $domainAllowEmpty->isValid(1));
+    }
+
     public function testRestrictions()
     {
         $validator = new Domain([
