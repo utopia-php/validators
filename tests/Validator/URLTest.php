@@ -52,4 +52,16 @@ class URLTest extends TestCase
         $this->assertSame(true, $this->url->isValid('https://example.com'));
         $this->assertSame(false, $this->url->isValid('gopher://www.example.com'));
     }
+
+    public function testAllowEmpty(): void
+    {
+        $urlAllowEmpty = new URL([], true);
+        $this->assertSame(true, $urlAllowEmpty->isValid(''));
+        $this->assertSame(false, $urlAllowEmpty->isValid(null));
+        $this->assertSame(true, $urlAllowEmpty->isValid('https://example.com'));
+        $this->assertSame(false, $urlAllowEmpty->isValid('not-a-url'));
+
+        $this->assertSame(false, $this->url->isValid(''));
+        $this->assertSame(false, $this->url->isValid(null));
+    }
 }
