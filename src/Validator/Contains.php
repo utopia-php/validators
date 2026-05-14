@@ -74,11 +74,11 @@ class Contains extends Validator
         }
 
         if (!$this->strict) {
-            $value = \mb_strtolower($value);
+            $value = \mb_strtolower($value, 'UTF-8');
         }
 
         foreach ($this->patterns as $pattern) {
-            $pattern = $this->strict ? $pattern : \mb_strtolower($pattern);
+            $pattern = $this->strict ? $pattern : \mb_strtolower($pattern, 'UTF-8');
 
             if (\str_contains($value, $pattern)) {
                 return true;
