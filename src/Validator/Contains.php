@@ -44,7 +44,15 @@ class Contains extends Validator
      */
     public function getDescription(): string
     {
-        return 'Value must contain one of ('.\implode(', ', $this->patterns).')';
+        $message = 'Value must contain one of ('.\implode(', ', $this->patterns).')';
+
+        if ($this->strict) {
+            $message .= ' (case-sensitive)';
+        } else {
+            $message .= ' (case-insensitive)';
+        }
+
+        return $message;
     }
 
     /**
