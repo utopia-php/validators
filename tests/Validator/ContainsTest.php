@@ -120,5 +120,10 @@ class ContainsTest extends TestCase
         $this->assertSame(\Utopia\Validator::TYPE_STRING, $validator->getType());
         $this->assertStringContainsString('foo', $validator->getDescription());
         $this->assertStringContainsString('bar', $validator->getDescription());
+        $this->assertStringContainsString('case-insensitive', $validator->getDescription());
+
+        $validatorStrict = new Contains(['foo', 'bar'], true);
+
+        $this->assertStringContainsString('case-sensitive', $validatorStrict->getDescription());
     }
 }
