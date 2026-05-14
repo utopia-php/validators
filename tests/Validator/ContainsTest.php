@@ -59,12 +59,12 @@ class ContainsTest extends TestCase
         $this->assertTrue($validator->isValid($message));
     }
 
-    public function testCanValidateWithEmptyPatternsArray(): void
+    public function testThrowsExceptionForEmptyPatternsArray(): void
     {
-        $validator = new Contains([]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Patterns array cannot be empty');
 
-        $this->assertFalse($validator->isValid('any string'));
-        $this->assertFalse($validator->isValid(''));
+        new Contains([]);
     }
 
     public function testCanValidateWithEmptyPatternString(): void

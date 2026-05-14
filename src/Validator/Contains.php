@@ -31,6 +31,10 @@ class Contains extends Validator
      */
     public function __construct(array $patterns, bool $strict = false)
     {
+        if (empty($patterns)) {
+            throw new \InvalidArgumentException('Patterns array cannot be empty');
+        }
+
         $this->patterns = $patterns;
         $this->strict = $strict;
     }
