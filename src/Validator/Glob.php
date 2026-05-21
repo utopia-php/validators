@@ -53,11 +53,17 @@ class Glob extends Validator
             return true;
         }
 
-        $include = array_filter($this->patterns, fn ($p) => !str_starts_with($p, '!'));
-        $exclude = array_filter($this->patterns, fn ($p) => str_starts_with($p, '!'));
+        $hasInclusions = false;
+        foreach ($this->patterns as $p) {
+            if (!str_starts_with($p, '!')) {
+                $hasInclusions = true;
+                break;
+            }
+        }
 
-        if (empty($include)) {
-            foreach ($exclude as $pattern) {
+        // Pure-exclusion mode: default to valid; any matching exclusion invalidates.
+        if (!$hasInclusions) {
+            foreach ($this->patterns as $pattern) {
                 if ($this->match($value, substr($pattern, 1))) {
                     return false;
                 }
@@ -66,27 +72,37 @@ class Glob extends Validator
             return true;
         }
 
-        $isSpecific = fn ($pattern) => !str_contains($pattern, '*') && !str_contains($pattern, '?') && !str_contains($pattern, '[');
+        // Inclusion mode.
+        //
+        // Step 1 — literal (no *, ?, [) inclusion patterns always win:
+        //   if any specific inclusion matches, the value is valid regardless of later exclusions.
+        $isWildcard = fn ($p) => str_contains($p, '*') || str_contains($p, '?') || str_contains($p, '[');
 
-        foreach ($include as $pattern) {
-            if ($isSpecific($pattern) && $this->match($value, $pattern)) {
+        foreach ($this->patterns as $pattern) {
+            if (!str_starts_with($pattern, '!') && !$isWildcard($pattern) && $this->match($value, $pattern)) {
                 return true;
             }
         }
 
-        foreach ($exclude as $pattern) {
-            if ($this->match($value, substr($pattern, 1))) {
-                return false;
+        // Step 2 — last-match-wins over the remaining (non-literal) patterns:
+        //   non-! wildcard match → valid (true)
+        //   ! match → invalid (false)
+        //   Literal inclusions already handled above; skip them here.
+        $state = false;
+        foreach ($this->patterns as $pattern) {
+            if (str_starts_with($pattern, '!')) {
+                if ($this->match($value, substr($pattern, 1))) {
+                    $state = false;
+                }
+            } elseif ($isWildcard($pattern)) {
+                if ($this->match($value, $pattern)) {
+                    $state = true;
+                }
             }
+            // literal non-! patterns are skipped (handled in step 1)
         }
 
-        foreach ($include as $pattern) {
-            if (!$isSpecific($pattern) && $this->match($value, $pattern)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $state;
     }
 
     /**
@@ -143,13 +159,29 @@ class Glob extends Validator
             } elseif ($char === '[') {
                 $j = $i + 1;
                 $bracketContent = '';
+                $isNegated = false;
 
-                // Allow ] as first char inside bracket (or after !)
+                // Check for negation marker (! or ^)
                 if ($j < $len && ($pattern[$j] === '!' || $pattern[$j] === '^')) {
-                    $bracketContent .= $pattern[$j];
+                    $negChar = $pattern[$j];
                     $j++;
+                    // If ] immediately follows the negation marker, treat ! or ^ as a
+                    // literal class member (edge case: [!] or [^]) rather than as negation.
+                    if ($j < $len && $pattern[$j] === ']') {
+                        // Literal class containing only ! or ^ — do NOT treat as negation
+                        $bracketContent .= $negChar;
+                    } else {
+                        $isNegated = true;
+                        $bracketContent .= $negChar;
+                    }
                 }
-                if ($j < $len && $pattern[$j] === ']') {
+
+                // Allow ] as first char inside bracket class (POSIX rule)
+                if ($j < $len && $pattern[$j] === ']' && $bracketContent === '') {
+                    $bracketContent .= ']';
+                    $j++;
+                } elseif ($j < $len && $pattern[$j] === ']' && $isNegated) {
+                    // After a negation marker, ] as first member is literal
                     $bracketContent .= ']';
                     $j++;
                 }
@@ -162,8 +194,13 @@ class Glob extends Validator
                 if ($j < $len) {
                     // Well-formed [...] — normalise ! negation to ^
                     $inner = $bracketContent;
-                    if (str_starts_with($inner, '!')) {
+                    if ($isNegated && str_starts_with($inner, '!')) {
                         $inner = '^' . substr($inner, 1);
+                    } elseif ($isNegated && str_starts_with($inner, '^')) {
+                        // already ^-prefixed, keep as-is
+                    } elseif (!$isNegated && str_starts_with($inner, '^')) {
+                        // Literal ^ as first char — escape it so PCRE doesn't treat as negation
+                        $inner = '\\^' . substr($inner, 1);
                     }
                     $regex .= '[' . $inner . ']';
                     $i = $j + 1;
