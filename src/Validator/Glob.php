@@ -127,16 +127,9 @@ class Glob extends Validator
 
     /**
      * Match a subject against a single pattern.
-     * Uses fnmatch() for simple patterns without ** or [, regex otherwise.
-     * Patterns with [ are routed through matchGlobstar to correctly handle
-     * unclosed brackets (treated as literals) and [!...] negated classes.
      */
     private function match(string $subject, string $pattern): bool
     {
-        if (!str_contains($pattern, '**') && !str_contains($pattern, '[')) {
-            return fnmatch($pattern, $subject, FNM_PATHNAME);
-        }
-
         return $this->matchGlobstar($subject, $pattern);
     }
 
