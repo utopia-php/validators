@@ -49,6 +49,14 @@ class GlobTest extends TestCase
         $this->assertFalse($validator->isValid('main'));
     }
 
+    public function testSingleWildcardWithDirectoryPrefix(): void
+    {
+        // baz/*.txt — * matches within a single directory segment
+        $this->assertTrue((new Glob(['baz/*.txt']))->isValid('baz/file.txt'));
+        $this->assertFalse((new Glob(['baz/*.txt']))->isValid('a/baz/file.txt')); // prefix must match literally
+        $this->assertFalse((new Glob(['baz/*.txt']))->isValid('baz/file.log'));
+    }
+
     public function testWildcardWithDash(): void
     {
         $validator = new Glob(['feature/test-*']);
@@ -84,6 +92,15 @@ class GlobTest extends TestCase
         $this->assertTrue($validator->isValid('fix-a.js'));
         $this->assertFalse($validator->isValid('fix-12.php')); // ? matches only one char
         $this->assertFalse($validator->isValid('fix-.php'));   // ? requires exactly one char
+    }
+
+    public function testQuestionMarkSuffix(): void
+    {
+        // qux? — question mark matches exactly one character as suffix
+        $this->assertTrue((new Glob(['qux?']))->isValid('qux1'));
+        $this->assertTrue((new Glob(['qux?']))->isValid('quxa'));
+        $this->assertFalse((new Glob(['qux?']))->isValid('qux'));   // requires exactly one char
+        $this->assertFalse((new Glob(['qux?']))->isValid('qux12')); // does not match two chars
     }
 
     public function testDoubleWildcardAtEnd(): void
@@ -305,6 +322,60 @@ class GlobTest extends TestCase
         $this->assertFalse($validator->isValid('Foo.php'));
         $this->assertFalse($validator->isValid('lib/Foo.php'));
         $this->assertFalse($validator->isValid('src/Foo.js'));
+    }
+
+    public function testDoubleWildcardAtStartAlternateFilename(): void
+    {
+        // **/temp.txt — different filename from existing **/file.txt tests
+        $this->assertTrue((new Glob(['**/temp.txt']))->isValid('temp.txt'));
+        $this->assertTrue((new Glob(['**/temp.txt']))->isValid('a/temp.txt'));
+        $this->assertTrue((new Glob(['**/temp.txt']))->isValid('a/b/temp.txt'));
+    }
+
+    public function testDoubleWildcardAtEndNoExtension(): void
+    {
+        // src/** without extension filter
+        $this->assertTrue((new Glob(['src/**']))->isValid('src/file.txt'));
+        $this->assertTrue((new Glob(['src/**']))->isValid('src/a/file.txt'));
+    }
+
+    public function testDoubleWildcardLogExtension(): void
+    {
+        // src/**/*.log
+        $this->assertTrue((new Glob(['src/**/*.log']))->isValid('src/error.log'));
+        $this->assertTrue((new Glob(['src/**/*.log']))->isValid('src/a/debug.log'));
+    }
+
+    public function testDoubleWildcardMiddleWithTwoSegmentTail(): void
+    {
+        // a/**/b/c — tail is two segments (b/c)
+        $this->assertTrue((new Glob(['a/**/b/c']))->isValid('a/b/c'));      // zero intermediate
+        $this->assertTrue((new Glob(['a/**/b/c']))->isValid('a/x/b/c'));    // one intermediate
+        $this->assertTrue((new Glob(['a/**/b/c']))->isValid('a/x/y/b/c')); // two intermediate
+        $this->assertFalse((new Glob(['a/**/b/c']))->isValid('a/b/d'));     // wrong tail
+    }
+
+    public function testDoubleWildcardBothSides(): void
+    {
+        // **/d/e/** — globstar on both sides of a literal segment pair
+        $this->assertTrue((new Glob(['**/d/e/**']))->isValid('d/e/file.txt'));
+        $this->assertTrue((new Glob(['**/d/e/**']))->isValid('x/d/e/file.txt'));
+        $this->assertTrue((new Glob(['**/d/e/**']))->isValid('x/y/d/e/z/file.txt'));
+        $this->assertFalse((new Glob(['**/d/e/**']))->isValid('d/f/file.txt'));
+    }
+
+    public function testDoubleWildcardWithJsExtension(): void
+    {
+        // src/foo/**/*.js
+        $this->assertTrue((new Glob(['src/foo/**/*.js']))->isValid('src/foo/app/file.js'));
+        $this->assertTrue((new Glob(['src/foo/**/*.js']))->isValid('src/foo/file.js'));
+        $this->assertFalse((new Glob(['src/foo/**/*.js']))->isValid('src/bar/app/file.js'));
+    }
+
+    public function testDoubleWildcardDeepNesting(): void
+    {
+        // Very deep path with ** in the middle
+        $this->assertTrue((new Glob(['deep/**/logs/*.log']))->isValid('deep/level1/level2/level3/level4/level5/level6/level7/logs/app.log'));
     }
 
     // -------------------------------------------------------------------------
@@ -537,6 +608,18 @@ class GlobTest extends TestCase
         $this->assertFalse((new Glob(['file\*.txt']))->isValid('fileX.txt'));
     }
 
+    public function testEscapedHashIsNotComment(): void
+    {
+        // \# must be treated as a literal # character, not a comment marker
+        $this->assertTrue((new Glob(['\#not_a_comment.txt']))->isValid('#not_a_comment.txt'));
+    }
+
+    public function testEscapedQuestionMarkIsLiteral(): void
+    {
+        // \? must match literal ? rather than any single character
+        $this->assertTrue((new Glob(['file\?.txt']))->isValid('file?.txt'));
+    }
+
     public function testBasicCharacterClasses(): void
     {
         $this->assertTrue((new Glob(['[a]bc.txt']))->isValid('abc.txt'));
@@ -605,5 +688,38 @@ class GlobTest extends TestCase
         // Unclosed bracket treated as literal
         $this->assertTrue((new Glob(['[abc']))->isValid('[abc'));
         $this->assertFalse((new Glob(['[abc']))->isValid('abc'));
+    }
+
+    public function testEdgeCaseExclamationOnlyClass(): void
+    {
+        // [!] — exclamation as sole content; behaviour is implementation-defined
+        // but the implementation treats it as a literal class containing '!'
+        $this->assertTrue((new Glob(['[!]file.txt']))->isValid('!file.txt'));
+    }
+
+    public function testEdgeCaseCaretOnlyClass(): void
+    {
+        // [^] — caret as sole content; behaviour is implementation-defined
+        // but the implementation treats it as a literal class containing '^'
+        $this->assertTrue((new Glob(['[^]file.txt']))->isValid('^file.txt'));
+    }
+
+    // -------------------------------------------------------------------------
+    // Complex negation chain
+    // -------------------------------------------------------------------------
+
+    public function testComplexNegationChainPattern(): void
+    {
+        // Patterns: *.md, !README*.md, README-private*.md
+        // - inclusion exists (*.md), so non-matching paths fail
+        // - README*.md is excluded by the second pattern
+        // - README-private*.md is re-included by the third pattern
+        $patterns = ['*.md', '!README*.md', 'README-private*.md'];
+
+        $this->assertTrue((new Glob($patterns))->isValid('documentation.md'));      // included, not excluded
+        $this->assertFalse((new Glob($patterns))->isValid('README.md'));             // excluded by !README*.md
+        $this->assertFalse((new Glob($patterns))->isValid('README-public.md'));      // excluded by !README*.md
+        $this->assertTrue((new Glob($patterns))->isValid('README-private.md'));      // re-included by README-private*.md
+        $this->assertTrue((new Glob($patterns))->isValid('README-private-draft.md')); // re-included by README-private*.md
     }
 }
