@@ -66,7 +66,7 @@ class Glob extends Validator
             return true;
         }
 
-        $isSpecific = fn ($pattern) => !str_contains($pattern, '*') && !str_contains($pattern, '?');
+        $isSpecific = fn ($pattern) => !str_contains($pattern, '*') && !str_contains($pattern, '?') && !str_contains($pattern, '[');
 
         foreach ($include as $pattern) {
             if ($isSpecific($pattern) && $this->match($value, $pattern)) {

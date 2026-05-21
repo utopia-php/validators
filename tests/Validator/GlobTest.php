@@ -439,6 +439,37 @@ class GlobTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // Character class patterns
+    // -------------------------------------------------------------------------
+
+    public function testCharacterClassInclusion(): void
+    {
+        $validator = new Glob(['[Mm]ain']);
+        $this->assertTrue($validator->isValid('main'));
+        $this->assertTrue($validator->isValid('Main'));
+        $this->assertFalse($validator->isValid('MAIN'));
+        $this->assertFalse($validator->isValid('develop'));
+    }
+
+    public function testCharacterClassInclusionWithWildcardExclusion(): void
+    {
+        // [Mm]ain is a character-class pattern (not a literal), so it must not
+        // short-circuit before exclusions are evaluated.
+        $validator = new Glob(['[Mm]ain', '!**']);
+        $this->assertFalse($validator->isValid('main'));
+        $this->assertFalse($validator->isValid('Main'));
+    }
+
+    public function testCharacterClassExclusion(): void
+    {
+        $validator = new Glob(['!feature/[0-9]*']);
+        $this->assertFalse($validator->isValid('feature/123'));
+        $this->assertFalse($validator->isValid('feature/9fix'));
+        $this->assertTrue($validator->isValid('feature/abc'));
+        $this->assertTrue($validator->isValid('main'));
+    }
+
+    // -------------------------------------------------------------------------
     // Metadata
     // -------------------------------------------------------------------------
 
