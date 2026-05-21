@@ -489,4 +489,121 @@ class GlobTest extends TestCase
         $this->assertFalse($validator->isValid(['main']));
         $this->assertFalse($validator->isValid(true));
     }
+
+    // -------------------------------------------------------------------------
+    // Character class and escaped character coverage (gregpriday/gitignore-php parity)
+    // -------------------------------------------------------------------------
+
+    public function testLiteralsExact(): void
+    {
+        $this->assertTrue((new Glob(['file.txt']))->isValid('file.txt'));
+        $this->assertFalse((new Glob(['file.txt']))->isValid('file.txt.bak'));
+    }
+
+    public function testSingleAsteriskDoesNotCrossSlash(): void
+    {
+        $this->assertTrue((new Glob(['*.txt']))->isValid('file.txt'));
+        $this->assertTrue((new Glob(['*.txt']))->isValid('another.txt'));
+        $this->assertFalse((new Glob(['*.txt']))->isValid('file.txt.bak'));
+        $this->assertFalse((new Glob(['*.txt']))->isValid('dir/file.txt')); // * does not cross /
+    }
+
+    public function testQuestionMarkSingleChar(): void
+    {
+        $this->assertTrue((new Glob(['file.?xt']))->isValid('file.txt'));
+        $this->assertTrue((new Glob(['file.?xt']))->isValid('file.dxt'));
+        $this->assertFalse((new Glob(['file.?xt']))->isValid('file.xtt'));
+    }
+
+    public function testDoubleStarPrefixFileMatch(): void
+    {
+        $this->assertTrue((new Glob(['**/file.txt']))->isValid('file.txt'));
+        $this->assertTrue((new Glob(['**/file.txt']))->isValid('dir/file.txt'));
+        $this->assertTrue((new Glob(['**/file.txt']))->isValid('dir/subdir/file.txt'));
+        $this->assertFalse((new Glob(['**/file.txt']))->isValid('file.txt.bak'));
+    }
+
+    public function testDoubleStarMiddleFileMatch(): void
+    {
+        $this->assertTrue((new Glob(['src/**/file.txt']))->isValid('src/file.txt'));
+        $this->assertTrue((new Glob(['src/**/file.txt']))->isValid('src/dir/file.txt'));
+        $this->assertTrue((new Glob(['src/**/file.txt']))->isValid('src/dir/subdir/file.txt'));
+        $this->assertFalse((new Glob(['src/**/file.txt']))->isValid('other/file.txt'));
+    }
+
+    public function testEscapedAsteriskIsLiteral(): void
+    {
+        $this->assertTrue((new Glob(['file\*.txt']))->isValid('file*.txt'));
+        $this->assertFalse((new Glob(['file\*.txt']))->isValid('fileX.txt'));
+    }
+
+    public function testBasicCharacterClasses(): void
+    {
+        $this->assertTrue((new Glob(['[a]bc.txt']))->isValid('abc.txt'));
+        $this->assertFalse((new Glob(['[a]bc.txt']))->isValid('bbc.txt'));
+        $this->assertTrue((new Glob(['[a-z]est.txt']))->isValid('test.txt'));
+        $this->assertFalse((new Glob(['[a-z]est.txt']))->isValid('Test.txt'));
+        $this->assertTrue((new Glob(['[A-Z]est.txt']))->isValid('Test.txt'));
+        $this->assertFalse((new Glob(['[A-Z]est.txt']))->isValid('test.txt'));
+        $this->assertTrue((new Glob(['file[0-9].log']))->isValid('file5.log'));
+        $this->assertFalse((new Glob(['file[0-9].log']))->isValid('fileA.log'));
+        $this->assertTrue((new Glob(['[a-zA-Z]file.txt']))->isValid('afile.txt'));
+        $this->assertTrue((new Glob(['[a-zA-Z]file.txt']))->isValid('Afile.txt'));
+        $this->assertFalse((new Glob(['[a-zA-Z]file.txt']))->isValid('1file.txt'));
+    }
+
+    public function testNegatedCharacterClasses(): void
+    {
+        $this->assertTrue((new Glob(['[!a-z]file.txt']))->isValid('Afile.txt'));
+        $this->assertFalse((new Glob(['[!a-z]file.txt']))->isValid('afile.txt'));
+        $this->assertTrue((new Glob(['^[^a-z]file.txt']))->isValid('^1file.txt'));
+        $this->assertFalse((new Glob(['[^a-z]file.txt']))->isValid('afile.txt'));
+        $this->assertTrue((new Glob(['[!a-z0-9]file.txt']))->isValid('#file.txt'));
+        $this->assertFalse((new Glob(['[!a-z0-9]file.txt']))->isValid('afile.txt'));
+        $this->assertFalse((new Glob(['[!a-z0-9]file.txt']))->isValid('5file.txt'));
+    }
+
+    public function testCaretNegatedCharacterClass(): void
+    {
+        $this->assertTrue((new Glob(['[^a-z]file.txt']))->isValid('1file.txt'));
+        $this->assertFalse((new Glob(['[^a-z]file.txt']))->isValid('afile.txt'));
+    }
+
+    public function testSpecialCharsInsideCharacterClasses(): void
+    {
+        $this->assertTrue((new Glob(['file[.+]name.txt']))->isValid('file.name.txt'));
+        $this->assertTrue((new Glob(['file[.+]name.txt']))->isValid('file+name.txt'));
+        $this->assertFalse((new Glob(['file[.+]name.txt']))->isValid('filename.txt'));
+        $this->assertTrue((new Glob(['[_!@#]special.txt']))->isValid('_special.txt'));
+        $this->assertTrue((new Glob(['[_!@#]special.txt']))->isValid('@special.txt'));
+        $this->assertFalse((new Glob(['[_!@#]special.txt']))->isValid('xspecial.txt'));
+        $this->assertTrue((new Glob(['[-abc]dash.txt']))->isValid('-dash.txt'));
+        $this->assertTrue((new Glob(['[-abc]dash.txt']))->isValid('adash.txt'));
+        $this->assertTrue((new Glob(['[abc-]dash.txt']))->isValid('-dash.txt'));
+    }
+
+    public function testCharacterClassCombinedWithGlobstar(): void
+    {
+        $this->assertTrue((new Glob(['[a-z]*.txt']))->isValid('abc.txt'));
+        $this->assertFalse((new Glob(['[a-z]*.txt']))->isValid('Abc.txt'));
+        $this->assertTrue((new Glob(['**/[a-z]*.txt']))->isValid('dir/abc.txt'));
+        $this->assertTrue((new Glob(['**/[a-z]*.txt']))->isValid('dir/subdir/abc.txt'));
+        $this->assertFalse((new Glob(['**/[a-z]*.txt']))->isValid('dir/Abc.txt'));
+        $this->assertTrue((new Glob(['[a-z][0-9]*.txt']))->isValid('a1file.txt'));
+        $this->assertFalse((new Glob(['[a-z][0-9]*.txt']))->isValid('ab.txt'));
+        $this->assertFalse((new Glob(['[a-z][0-9]*.txt']))->isValid('A1file.txt'));
+    }
+
+    public function testEdgeCaseEmptyCharacterClass(): void
+    {
+        // Empty character class [] matches nothing
+        $this->assertFalse((new Glob(['[]file.txt']))->isValid('file.txt'));
+    }
+
+    public function testEdgeCaseUnclosedBracket(): void
+    {
+        // Unclosed bracket treated as literal
+        $this->assertTrue((new Glob(['[abc']))->isValid('[abc'));
+        $this->assertFalse((new Glob(['[abc']))->isValid('abc'));
+    }
 }
