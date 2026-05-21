@@ -19,7 +19,7 @@ use Utopia\Validator;
  * Pattern syntax follows the gitignore specification.
  * See https://git-scm.com/docs/gitignore for reference.
  */
-class Glob extends Validator
+class Globstar extends Validator
 {
     public function __construct(private readonly array $patterns)
     {
