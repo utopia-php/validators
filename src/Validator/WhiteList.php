@@ -40,12 +40,6 @@ class WhiteList extends Validator
         $this->list = $list;
         $this->strict = $strict;
         $this->type = $type;
-
-        if (!$this->strict) {
-            foreach ($this->list as $key => &$value) {
-                $this->list[$key] = \strtolower($value);
-            }
-        }
     }
 
     /**
@@ -108,12 +102,17 @@ class WhiteList extends Validator
             return false;
         }
 
-        $value = ($this->strict) ? $value : \strtolower($value);
-
-        if (!\in_array($value, $this->list, $this->strict)) {
-            return false;
+        if ($this->strict) {
+            return \in_array($value, $this->list, true);
         }
 
-        return true;
+        $valueLower = \strtolower((string) $value);
+        foreach ($this->list as $listItem) {
+            if ($valueLower === \strtolower((string) $listItem)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

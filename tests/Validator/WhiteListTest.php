@@ -39,7 +39,7 @@ class WhiteListTest extends TestCase
         $this->assertTrue($whiteList->isValid('4'));
         $this->assertFalse($whiteList->isValid('string3'));
         $this->assertFalse($whiteList->isValid(5));
-        $this->assertSame($whiteList->getList(), ['string1', 'string2', '3', '4']);
+        $this->assertSame($whiteList->getList(), ['string1', 'string2', 3, 4]);
 
         $whiteList = new WhiteList(['STRING1', 'STRING2', 3, 4]);
 
@@ -53,6 +53,6 @@ class WhiteListTest extends TestCase
         $this->assertTrue($whiteList->isValid('4'));
         $this->assertFalse($whiteList->isValid('string3'));
         $this->assertFalse($whiteList->isValid(5));
-        $this->assertSame($whiteList->getList(), ['string1', 'string2', '3', '4']);
+        $this->assertSame($whiteList->getList(), ['STRING1', 'STRING2', 3, 4]);
     }
 }
