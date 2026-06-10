@@ -42,6 +42,7 @@ class URLTest extends TestCase
         $this->assertSame(false, $this->url->isValid('htt@s://example.com'));
         $this->assertSame(true, $this->url->isValid('http://www.example.com/foo%2\u00c2\u00a9zbar'));
         $this->assertSame(true, $this->url->isValid('http://www.example.com/?q=%3Casdf%3E'));
+        $this->assertSame(true, $this->url->isValid('https://example.com/callback#fragment'));
     }
 
     public function testIsValidAllowedSchemes(): void
@@ -63,5 +64,25 @@ class URLTest extends TestCase
 
         $this->assertSame(false, $this->url->isValid(''));
         $this->assertSame(false, $this->url->isValid(null));
+    }
+
+    public function testDisallowFragments(): void
+    {
+        $urlWithoutFragments = new URL(allowFragments: false);
+
+        $this->assertSame('Value must be a valid URL without a fragment component', $urlWithoutFragments->getDescription());
+        $this->assertSame(true, $urlWithoutFragments->isValid('https://example.com/callback'));
+        $this->assertSame(false, $urlWithoutFragments->isValid('https://example.com/callback#fragment'));
+        $this->assertSame(false, $urlWithoutFragments->isValid('https://example.com/callback#'));
+    }
+
+    public function testDisallowFragmentsAllowedSchemes(): void
+    {
+        $urlWithoutFragments = new URL(['http', 'https'], allowFragments: false);
+
+        $this->assertSame('Value must be a valid URL with following schemes (http, https) and without a fragment component', $urlWithoutFragments->getDescription());
+        $this->assertSame(true, $urlWithoutFragments->isValid('https://example.com/callback'));
+        $this->assertSame(false, $urlWithoutFragments->isValid('https://example.com/callback#fragment'));
+        $this->assertSame(false, $urlWithoutFragments->isValid('gopher://www.example.com'));
     }
 }

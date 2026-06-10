@@ -17,14 +17,18 @@ class URL extends Validator
 
     protected bool $allowEmpty;
 
+    protected bool $allowFragments;
+
     /**
      * @param array $allowedSchemes
      * @param bool $allowEmpty
+     * @param bool $allowFragments
      */
-    public function __construct(array $allowedSchemes = [], bool $allowEmpty = false)
+    public function __construct(array $allowedSchemes = [], bool $allowEmpty = false, bool $allowFragments = true)
     {
         $this->allowedSchemes = $allowedSchemes;
         $this->allowEmpty = $allowEmpty;
+        $this->allowFragments = $allowFragments;
     }
 
     /**
@@ -37,7 +41,17 @@ class URL extends Validator
     public function getDescription(): string
     {
         if (!empty($this->allowedSchemes)) {
-            return 'Value must be a valid URL with following schemes (' . \implode(', ', $this->allowedSchemes) . ')';
+            $description = 'Value must be a valid URL with following schemes (' . \implode(', ', $this->allowedSchemes) . ')';
+
+            if (!$this->allowFragments) {
+                $description .= ' and without a fragment component';
+            }
+
+            return $description;
+        }
+
+        if (!$this->allowFragments) {
+            return 'Value must be a valid URL without a fragment component';
         }
 
         return 'Value must be a valid URL';
@@ -62,6 +76,10 @@ class URL extends Validator
         }
 
         if (!empty($this->allowedSchemes) && !\in_array(\parse_url($value, PHP_URL_SCHEME), $this->allowedSchemes)) {
+            return false;
+        }
+
+        if (!$this->allowFragments && \parse_url($value, PHP_URL_FRAGMENT) !== null) {
             return false;
         }
 
