@@ -93,14 +93,7 @@ class URL extends Validator
         $scheme = \substr($value, 0, $colonPos);
         $remainder = \substr($value, $colonPos + 1);
 
-        // Scheme must match the RFC 3986 grammar (parse_url does not enforce this).
-        if (\preg_match('/^[a-zA-Z][a-zA-Z0-9+.\-]*$/', $scheme) !== 1) {
-            return false;
-        }
-
-        // Must be a reverse-DNS / private-use scheme (contains at least one dot),
-        // per RFC 8252 §7.1. This also excludes standard dotless schemes.
-        if (!\str_contains($scheme, '.')) {
+        if (!$this->isPrivateUseScheme($scheme)) {
             return false;
         }
 
@@ -109,14 +102,42 @@ class URL extends Validator
             return false;
         }
 
-        // The remainder must be a valid RFC 3986 path (with no authority),
-        // optionally followed by a query and/or fragment component.
-        $pchar = "A-Za-z0-9\\-._~!\$&'()*+,;=:@";
-        $pct = '%[0-9A-Fa-f]{2}';
-        $path = "(?:[$pchar/]|$pct)*";
-        $queryOrFragment = "(?:[$pchar/?]|$pct)*";
+        // Validate the authority-less remainder (a path, optionally with a query
+        // and/or fragment) by reusing PHP's URL validation with a placeholder
+        // authority, since filter_var alone rejects the authority-less form.
+        $normalized = \str_starts_with($remainder, '/')
+            ? 'https://localhost' . $remainder
+            : 'https://localhost/' . $remainder;
 
-        return \preg_match("#^$path(?:\\?$queryOrFragment)?(?:\\#$queryOrFragment)?$#", $remainder) === 1;
+        return filter_var($normalized, FILTER_VALIDATE_URL) !== false;
+    }
+
+    /**
+     * Is private-use scheme
+     *
+     * Returns true when $scheme is a valid RFC 3986 scheme that is also a
+     * reverse-DNS / private-use scheme (contains a dot), per RFC 8252 §7.1.
+     * The dot requirement also excludes standard dotless schemes (http, ftp, …).
+     * parse_url does not enforce the scheme grammar, so validate it explicitly.
+     */
+    private function isPrivateUseScheme(string $scheme): bool
+    {
+        // RFC 3986: scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+        if ($scheme === '' || !\ctype_alpha($scheme[0])) {
+            return false;
+        }
+
+        if (!\str_contains($scheme, '.')) {
+            return false;
+        }
+
+        foreach (\str_split($scheme) as $char) {
+            if (!\ctype_alnum($char) && !\in_array($char, ['+', '-', '.'], true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
